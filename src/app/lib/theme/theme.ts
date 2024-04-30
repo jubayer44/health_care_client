@@ -6,7 +6,7 @@ export const theme = createTheme({
       main: "#1586FD",
     },
     secondary: {
-      main: "#666F73",
+      main: "#666f73",
     },
   },
   components: {
@@ -18,6 +18,11 @@ export const theme = createTheme({
         root: {
           padding: "8px 24px",
         },
+      },
+    },
+    MuiContainer: {
+      defaultProps: {
+        maxWidth: "lg",
       },
     },
   },
