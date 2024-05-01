@@ -10,6 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import Image from "next/image";
+import PlaceIcon from "@mui/icons-material/Place";
 
 const TopRatedDoctors = async () => {
   const res = await fetch(
@@ -21,7 +22,7 @@ const TopRatedDoctors = async () => {
     }
   );
   const { data: doctors } = await res.json();
-  console.log(doctors);
+
   return (
     <Box
       sx={{
@@ -62,15 +63,34 @@ const TopRatedDoctors = async () => {
                   <Typography variant="body2" color="text.secondary">
                     {doctor.qualification}, {doctor.designation}
                   </Typography>
+                  <Typography variant="body2" color="text.secondary" mt={1}>
+                    <PlaceIcon /> {doctor.address}
+                  </Typography>
                 </CardContent>
-                <CardActions>
-                  <Button size="small">Share</Button>
-                  <Button size="small">Learn More</Button>
+                <CardActions
+                  sx={{ justifyContent: "space-between", pb: "20px" }}
+                >
+                  <Button size="small">Book Now</Button>
+                  <Button size="small">View Profile</Button>
                 </CardActions>
               </Card>
             </Grid>
           ))}
         </Grid>
+        <Box
+          sx={{
+            textAlign: "center",
+          }}
+        >
+          <Button
+            variant="outlined"
+            sx={{
+              marginTop: "20px",
+            }}
+          >
+            View ALL
+          </Button>
+        </Box>
       </Container>
     </Box>
   );

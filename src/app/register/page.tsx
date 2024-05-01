@@ -1,7 +1,5 @@
-"use client"
+"use client";
 
-import assets from "@/assets";
-import { loginUser } from "@/services/actions/loginUser";
 import {
   Box,
   Button,
@@ -12,26 +10,41 @@ import {
   Typography,
 } from "@mui/material";
 import Image from "next/image";
+import assets from "@/assets";
 import Link from "next/link";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form"
+import { modifyPayload } from "@/utils/modifyPayload";
+import { registerPatient } from "../../services/actions/registerPatient";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
-export interface IUserLoginData {
-  email: string
+
+interface IPatientFormData {
   password: string
+  patient: {
+    name: string
+    email: string
+    contactNumber: string
+    address: string
+  }
 }
 
-const LoginPage = () => {
+const RegisterPage = () => {
+  const router = useRouter()
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm<IUserLoginData>()
-  const onSubmit: SubmitHandler<IUserLoginData> = async (values) => {
+  } = useForm<IPatientFormData>()
+  const onSubmit: SubmitHandler<IPatientFormData> = async (values) => {
+    const data = modifyPayload(values)
     try{
-      const res = await loginUser(values);
-      console.log(res);
-      console.log(values);
+      const res = await registerPatient(data);
+      if(res.success === true){
+        toast.success(res.message);
+        router.push('/login')
+      }
     }
     catch(err: any){
       console.error(err.message)
@@ -67,14 +80,22 @@ const LoginPage = () => {
             </Box>
             <Box>
               <Typography variant="h6" mt={1} fontWeight={700}>
-                Login Sunshine Health Care
+                Patient Register
               </Typography>
             </Box>
           </Stack>
           <form onSubmit={handleSubmit(onSubmit)}>
             <Box>
               <Grid container spacing={2} my={1}>
-                
+                <Grid item md={12}>
+                  <TextField
+                    label="Name"
+                    variant="outlined"
+                    fullWidth={true}
+                    size="small"
+                    {...register("patient.name")}
+                  />
+                </Grid>
                 <Grid item md={6}>
                   <TextField
                     label="Email"
@@ -82,12 +103,12 @@ const LoginPage = () => {
                     type="email"
                     fullWidth={true}
                     size="small"
-                    {...register("email")}
+                    {...register("patient.email")}
                   />
                 </Grid>
                 <Grid item md={6}>
                   <TextField
-                    label="Password"
+                    label="password"
                     variant="outlined"
                     type="password"
                     fullWidth={true}
@@ -95,15 +116,34 @@ const LoginPage = () => {
                     {...register("password")}
                   />
                 </Grid>
+                <Grid item md={6}>
+                  <TextField
+                    label="Contact"
+                    variant="outlined"
+                    type="tel"
+                    fullWidth={true}
+                    size="small"
+                    {...register("patient.contactNumber")}
+                  />
+                </Grid>
+                <Grid item md={6}>
+                  <TextField
+                    label="Address"
+                    variant="outlined"
+                    type="text"
+                    fullWidth={true}
+                    size="small"
+                    {...register("patient.address")}
+                  />
+                </Grid>
               </Grid>
-              <Typography component="p" fontSize={14} fontWeight={300} textAlign="right" >Forgat Password</Typography>
               <Button type="submit" fullWidth={true} sx={{ margin: "10px 0" }}>
-                Login
+                Register
               </Button>
               <Typography component="p" fontSize={18} fontWeight={300} sx={{ textAlign: "center" }}>
-                Don&apos;t have an account?{" "}
-                  <Link href="/register" color="blue">
-                  Register
+                Already have an account?{" "}
+                  <Link href="/login" color="blue">
+                  Login
                 </Link>
               </Typography>
             </Box>
@@ -114,4 +154,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default RegisterPage;
