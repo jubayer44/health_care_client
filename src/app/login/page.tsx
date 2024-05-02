@@ -14,6 +14,9 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { storeUserInfo } from "@/services/auth.services";
 
 export interface IUserLoginData {
   email: string
@@ -21,6 +24,7 @@ export interface IUserLoginData {
 }
 
 const LoginPage = () => {
+  const router = useRouter()
   const {
     register,
     handleSubmit,
@@ -30,8 +34,11 @@ const LoginPage = () => {
   const onSubmit: SubmitHandler<IUserLoginData> = async (values) => {
     try{
       const res = await loginUser(values);
-      console.log(res);
-      console.log(values);
+      if(res.success === true){
+        toast.success(res.message)
+        storeUserInfo({accessToken: res.data.accessToken});
+        router.push('/')
+      }
     }
     catch(err: any){
       console.error(err.message)
