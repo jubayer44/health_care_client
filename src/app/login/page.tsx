@@ -1,7 +1,9 @@
 "use client"
-
 import assets from "@/assets";
+import SNForm from "@/components/Forms/SNForm";
+import SNInput from "@/components/Forms/SNInput";
 import { loginUser } from "@/services/actions/loginUser";
+import { storeUserInfo } from "@/services/auth.services";
 import {
   Box,
   Button,
@@ -13,25 +15,15 @@ import {
 } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
-import { SubmitHandler, useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
+import { FieldValues } from "react-hook-form";
 import { toast } from "sonner";
-import { storeUserInfo } from "@/services/auth.services";
 
-export interface IUserLoginData {
-  email: string
-  password: string
-}
 
 const LoginPage = () => {
   const router = useRouter()
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm<IUserLoginData>()
-  const onSubmit: SubmitHandler<IUserLoginData> = async (values) => {
+ 
+  const handleLogin = async (values: FieldValues) => {
     try{
       const res = await loginUser(values);
       if(res.success === true){
@@ -78,28 +70,22 @@ const LoginPage = () => {
               </Typography>
             </Box>
           </Stack>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <SNForm onSubmit={handleLogin}>
             <Box>
               <Grid container spacing={2} my={1}>
                 
                 <Grid item md={6}>
-                  <TextField
+                  <SNInput
+                    name="email"
                     label="Email"
-                    variant="outlined"
                     type="email"
-                    fullWidth={true}
-                    size="small"
-                    {...register("email")}
                   />
                 </Grid>
                 <Grid item md={6}>
-                  <TextField
+                  <SNInput
+                    name="password"
                     label="Password"
-                    variant="outlined"
                     type="password"
-                    fullWidth={true}
-                    size="small"
-                    {...register("password")}
                   />
                 </Grid>
               </Grid>
@@ -114,7 +100,7 @@ const LoginPage = () => {
                 </Link>
               </Typography>
             </Box>
-          </form>
+          </SNForm>
         </Box>
       </Stack>
     </Container>
