@@ -1,9 +1,17 @@
-"use client"
+"use client";
+import { useState } from "react";
 import assets from "@/assets";
 import SNForm from "@/components/Forms/SNForm";
 import SNInput from "@/components/Forms/SNInput";
 import { loginUser } from "@/services/actions/loginUser";
 import { storeUserInfo } from "@/services/auth.services";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { FieldValues } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Box,
   Button,
@@ -13,32 +21,34 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { FieldValues } from "react-hook-form";
-import { toast } from "sonner";
 
+const validationSchema = z.object({
+  email: z.string().email("Email is required"),
+  password: z.string().min(5, "Password must be at least 5 characters"),
+});
 
 const LoginPage = () => {
-  const router = useRouter()
- 
+  const [error, setError] = useState("");
+  const router = useRouter();
+
   const handleLogin = async (values: FieldValues) => {
-    try{
+    try {
       const res = await loginUser(values);
-      if(res.success === true){
-        toast.success(res.message)
-        storeUserInfo({accessToken: res.data.accessToken});
-        router.push('/')
+      if (res.success === true) {
+        toast.success(res.message);
+        storeUserInfo({ accessToken: res.data.accessToken });
+        setError("");
+        router.push("/");
+      } else {
+        setError(res.message);
       }
+    } catch (err: any) {
+      toast.error(err.message);
+      console.error(err.message);
     }
-    catch(err: any){
-      console.error(err.message)
-    }
-  }
+  };
   return (
-    <Container
-    >
+    <Container>
       <Stack
         sx={{
           minHeight: "100vh",
@@ -70,32 +80,56 @@ const LoginPage = () => {
               </Typography>
             </Box>
           </Stack>
-          <SNForm onSubmit={handleLogin}>
+          {error && (
+            <Box>
+              <Typography
+                sx={{
+                  textAlign: "center",
+                  fontWeight: 700,
+                  backgroundColor: "red",
+                  color: "white",
+                  padding: "5px",
+                  borderRadius: "5px",
+                  my: 2,
+                }}
+              >
+                {error}
+              </Typography>
+            </Box>
+          )}
+          <SNForm
+            onSubmit={handleLogin}
+            resolver={zodResolver(validationSchema)}
+            defaultValues={{ email: "", password: "" }}
+          >
             <Box>
               <Grid container spacing={2} my={1}>
-                
                 <Grid item md={6}>
-                  <SNInput
-                    name="email"
-                    label="Email"
-                    type="email"
-                  />
+                  <SNInput name="email" label="Email" type="email" />
                 </Grid>
                 <Grid item md={6}>
-                  <SNInput
-                    name="password"
-                    label="Password"
-                    type="password"
-                  />
+                  <SNInput name="password" label="Password" type="password" />
                 </Grid>
               </Grid>
-              <Typography component="p" fontSize={14} fontWeight={300} textAlign="right" >Forgat Password</Typography>
+              <Typography
+                component="p"
+                fontSize={14}
+                fontWeight={300}
+                textAlign="right"
+              >
+                Forgat Password
+              </Typography>
               <Button type="submit" fullWidth={true} sx={{ margin: "10px 0" }}>
                 Login
               </Button>
-              <Typography component="p" fontSize={18} fontWeight={300} sx={{ textAlign: "center" }}>
+              <Typography
+                component="p"
+                fontSize={18}
+                fontWeight={300}
+                sx={{ textAlign: "center" }}
+              >
                 Don&apos;t have an account?{" "}
-                  <Link href="/register" color="blue">
+                <Link href="/register" color="blue">
                   Register
                 </Link>
               </Typography>

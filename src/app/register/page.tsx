@@ -1,64 +1,70 @@
 "use client";
-
-import {
-  Box,
-  Button,
-  Container,
-  Grid,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
-import Image from "next/image";
 import assets from "@/assets";
-import Link from "next/link";
-import { useForm, SubmitHandler } from "react-hook-form"
-import { modifyPayload } from "@/utils/modifyPayload";
-import { registerPatient } from "../../services/actions/registerPatient";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { storeUserInfo } from "@/services/auth.services";
+import SNForm from "@/components/Forms/SNForm";
+import SNInput from "@/components/Forms/SNInput";
 import { loginUser } from "@/services/actions/loginUser";
+import { storeUserInfo } from "@/services/auth.services";
+import { modifyPayload } from "@/utils/modifyPayload";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { FieldValues } from "react-hook-form";
+import { toast } from "sonner";
+import { registerPatient } from "../../services/actions/registerPatient";
+import { Box, Button, Container, Grid, Stack, Typography } from "@mui/material";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 
+const patientValidationSchema = z.object({
+  password: z.string().min(5, "Password must be at least 5 characters"),
+  patient: z.object({
+    name: z.string().min(3, "Name is required"),
+    email: z.string().email("Email is required"),
+    contactNumber: z
+      .string()
+      .regex(/^\d{11}$/, "Please enter a valid phone number"),
+    address: z.string().min(5, "Address is required"),
+  }),
+});
 
-interface IPatientFormData {
-  password: string
+const defaultValues = {
+  password: "",
   patient: {
-    name: string
-    email: string
-    contactNumber: string
-    address: string
-  }
+    name: "",
+    email: "",
+    contactNumber: "",
+    address: "",
+  },
 }
 
 const RegisterPage = () => {
-  const router = useRouter()
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm<IPatientFormData>()
-  const onSubmit: SubmitHandler<IPatientFormData> = async (values) => {
-    const data = modifyPayload(values)
-    try{
+  const [error, setError] = useState("");
+  const router = useRouter();
+  const handleRegister = async (values: FieldValues) => {
+    const data = modifyPayload(values);
+    try {
       const res = await registerPatient(data);
-      if(res.success === true){
-        const result = await loginUser({email: values.patient.email, password: values.password});
-      if(result.success === true){
-        toast.success(res.message)
-        storeUserInfo({accessToken: result.data.accessToken});
-        router.push('/')
+      if (res.success === true) {
+        const result = await loginUser({
+          email: values.patient.email,
+          password: values.password,
+        });
+        if (result.success === true) {
+          toast.success(res.message);
+          storeUserInfo({ accessToken: result.data.accessToken });
+          setError("");
+          router.push("/");
+        } else {
+          setError(res.message);
+        }
       }
-      }
+    } catch (err: any) {
+      console.error(err.message);
     }
-    catch(err: any){
-      console.error(err.message)
-    }
-  }
+  };
   return (
-    <Container
-    >
+    <Container>
       <Stack
         sx={{
           minHeight: "100vh",
@@ -90,70 +96,66 @@ const RegisterPage = () => {
               </Typography>
             </Box>
           </Stack>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          {error && (
+            <Box>
+              <Typography
+                sx={{
+                  textAlign: "center",
+                  fontWeight: 700,
+                  backgroundColor: "red",
+                  color: "white",
+                  padding: "5px",
+                  borderRadius: "5px",
+                  my: 2,
+                }}
+              >
+                {error}
+              </Typography>
+            </Box>
+          )}
+          <SNForm
+            onSubmit={handleRegister}
+            defaultValues={defaultValues}
+            resolver={zodResolver(patientValidationSchema)}
+          >
             <Box>
               <Grid container spacing={2} my={1}>
                 <Grid item md={12}>
-                  <TextField
-                    label="Name"
-                    variant="outlined"
-                    fullWidth={true}
-                    size="small"
-                    {...register("patient.name")}
-                  />
+                  <SNInput label="Name" name="patient.name" />
                 </Grid>
                 <Grid item md={6}>
-                  <TextField
-                    label="Email"
-                    variant="outlined"
-                    type="email"
-                    fullWidth={true}
-                    size="small"
-                    {...register("patient.email")}
-                  />
+                  <SNInput label="Email" type="email" name="patient.email" />
                 </Grid>
                 <Grid item md={6}>
-                  <TextField
-                    label="password"
-                    variant="outlined"
-                    type="password"
-                    fullWidth={true}
-                    size="small"
-                    {...register("password")}
-                  />
+                  <SNInput label="password" type="password" name="password" />
                 </Grid>
                 <Grid item md={6}>
-                  <TextField
+                  <SNInput
                     label="Contact"
-                    variant="outlined"
                     type="tel"
-                    fullWidth={true}
-                    size="small"
-                    {...register("patient.contactNumber")}
+                    name="patient.contactNumber"
                   />
                 </Grid>
                 <Grid item md={6}>
-                  <TextField
-                    label="Address"
-                    variant="outlined"
-                    type="text"
-                    fullWidth={true}
-                    size="small"
-                    {...register("patient.address")}
-                  />
+                  <SNInput label="Address" type="text" name="patient.address" />
                 </Grid>
               </Grid>
               <Button type="submit" fullWidth={true} sx={{ margin: "10px 0" }}>
                 Register
               </Button>
-              <Typography component="p" fontSize={18} fontWeight={300} sx={{ textAlign: "center" }}>
+              <Typography
+                component="p"
+                fontSize={18}
+                fontWeight={300}
+                sx={{ textAlign: "center" }}
+              >
                 Already have an account?{" "}
-                  <Link href="/login" color="blue">
+                <Link href="/login" color="blue">
                   Login
                 </Link>
               </Typography>
             </Box>
-          </form>
+          </SNForm>
         </Box>
       </Stack>
     </Container>
