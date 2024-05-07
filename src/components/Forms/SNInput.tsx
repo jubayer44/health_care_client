@@ -9,10 +9,11 @@ type TInputProps = {
     sx?: SxProps;
     disabled?: boolean;
     required?: boolean;
+    placeholder?: string
 };
 
 
-const SNInput = ({ label, type="text", name, size="small", sx, disabled, required=false }: TInputProps) => {
+const SNInput = ({ label, type="text", name, size="small", sx, disabled, required=false, placeholder }: TInputProps) => {
     const {control} = useFormContext();
     return (
         <Controller
@@ -31,6 +32,7 @@ const SNInput = ({ label, type="text", name, size="small", sx, disabled, require
           required={required}
           error={!!error?.message}
           helperText={error?.message}
+          placeholder={placeholder}
           />
         )}
       />
