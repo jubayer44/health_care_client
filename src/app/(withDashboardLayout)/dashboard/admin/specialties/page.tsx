@@ -7,6 +7,7 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import Image from "next/image";
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
+import { toast } from "sonner";
 
 const SpecialtiesPage = () => {
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -16,7 +17,9 @@ const SpecialtiesPage = () => {
     const handleDelete = async (id: string) => {
         try{
             const res = await deleteSpecialty(id).unwrap();
-            console.log(res)
+            if(res?.id){
+                toast.success("Specialty deleted successful")
+            }
         }
         catch(err:any){
             console.error(err.message)
@@ -52,8 +55,9 @@ const SpecialtiesPage = () => {
                 !isLoading ? (
                 <Box my={2}>
                     <DataGrid
-                        rows={data?.data}
+                        rows={data}
                         columns={columns}
+                        hideFooter={true}
                     />
                 </Box>) : (
                 <Box>Loading...</Box>

@@ -33,3 +33,5 @@ export type TGenericErrorMessage = {
     path: string;
     message: string;
 }
+
+export const Gender = ["MALE", "FEMALE"];

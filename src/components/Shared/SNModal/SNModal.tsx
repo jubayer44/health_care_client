@@ -1,15 +1,13 @@
 "use client"
-import * as React from 'react';
 import CloseIcon from '@mui/icons-material/Close';
-import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import IconButton from '@mui/material/IconButton';
 import { SxProps, styled } from '@mui/material/styles';
+import * as React from 'react';
 
-const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+export const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
     padding: theme.spacing(2),
   },
