@@ -1,4 +1,4 @@
-import { authKey } from "@/constants/authkey";
+import { authKey } from "@/constants/authKey";
 import { getNewAccessToken } from "@/services/auth.services";
 import { TGenericErrorResponse, TResponseSuccess } from "@/types";
 import { getFromLocalStorage, setToLocalStorage } from "@/utils/local-storage";
@@ -41,13 +41,11 @@ instance.interceptors.response.use(
   async function (error) {
     // Any status codes that falls outside the range of 2xx cause this function to trigger
     // Do something with response error
-    // console.log(error);
     const config = error.config;
-    // console.log(config);
     if (error?.response?.status === 500 && !config.sent) {
       config.sent = true;
       const response = await getNewAccessToken();
-      const accessToken = response?.data?.accessToken;
+      const accessToken = response?.data?.accessToken as string;
       config.headers["Authorization"] = accessToken;
       setToLocalStorage(authKey, accessToken);
       return instance(config);

@@ -7,11 +7,27 @@ import { dateFormatter } from "@/utils/dateFormatter";
 import dayjs from "dayjs";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { toast } from "sonner";
 
 const SchedulesPage = () => {
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [schedules, setSchedules] = useState([]);
     const {data, isLoading} = useGetAllSchedulesQuery({});
+    // const [deleteSchedule] = useDeleteScheduleMutation();
+
+    const handleDelete = async (id: string) => {
+        try{
+            // const res = await deleteSchedule(id).unwrap();
+            // console.log(res)
+            // if(res?.success === true){
+            //     toast.success("Doctor deleted successful")
+            // }
+        }
+        catch(err:any){
+            console.error(err.message)
+        }
+    }
+
 
     useEffect(()=> {
         const scheduleData = data?.data?.map((item: any) => {
@@ -25,7 +41,7 @@ const SchedulesPage = () => {
         });
 
         setSchedules(scheduleData);
-    }, [schedules, data]);
+    }, [ data]); 
 
 
     const columns: GridColDef[] = [
@@ -41,7 +57,7 @@ const SchedulesPage = () => {
             align: "center",
             renderCell: ({ row }) => {
               return (
-                <IconButton aria-label="delete">
+                <IconButton onClick={()=> handleDelete(row?.id)} aria-label="delete">
                   <DeleteIcon sx={{ color: "red" }} />
                 </IconButton>
               );
