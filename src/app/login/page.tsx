@@ -41,7 +41,7 @@ const LoginPage = () => {
         toast.success(res.message);
         storeUserInfo({ accessToken: res.data.accessToken });
         setError("");
-        router.push("/dashboard");
+        // router.push("/dashboard");
       } else {
         setError(res.message);
       }

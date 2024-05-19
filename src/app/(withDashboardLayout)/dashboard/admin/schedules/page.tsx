@@ -1,5 +1,5 @@
 "use client";
-import { Box, Button, Stack, IconButton } from "@mui/material";
+import { Box, Button, Stack, IconButton, Pagination } from "@mui/material";
 import { useEffect, useState } from "react";
 import ScheduleModal from "./components/ScheduleModal";
 import {useGetAllSchedulesQuery} from '@/redux/api/scheduleApi';
@@ -12,8 +12,25 @@ import { toast } from "sonner";
 const SchedulesPage = () => {
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [schedules, setSchedules] = useState([]);
-    const {data, isLoading} = useGetAllSchedulesQuery({});
+    const [page, setPage] = useState<number>(1);
+    const [limit, setLimit] = useState<number>(10);
+    const query: Record<string, any> = {};
+    query['page'] = page;
+    query['limit'] = limit;
+    
     // const [deleteSchedule] = useDeleteScheduleMutation();
+    const {data, isLoading} = useGetAllSchedulesQuery({...query});
+
+    let pageCount;
+console.log(data)
+
+    if(data?.meta?.total){
+        pageCount = Math.ceil(data?.meta?.total / limit)
+    }
+
+    const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
+      setPage(value);
+    };
 
     const handleDelete = async (id: string) => {
         try{
@@ -77,11 +94,13 @@ const SchedulesPage = () => {
                     <DataGrid
                         rows={schedules ?? []}
                         columns={columns}
+                        hideFooter
                     />
                 </Box>) : (
                 <Box>Loading...</Box>
             )
             }
+            <Pagination color="primary" count={pageCount} page={page} onChange={handleChange} />
         </Box>
     );
 };

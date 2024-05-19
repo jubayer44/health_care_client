@@ -40,7 +40,6 @@ const DoctorProfile = () => {
               <Grid xs={12} md={4}>
                  <Box
                     sx={{
-                       height: 300,
                        width: '100%',
                        overflow: 'hidden',
                        borderRadius: 1,
