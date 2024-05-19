@@ -42,7 +42,7 @@ instance.interceptors.response.use(
     // Any status codes that falls outside the range of 2xx cause this function to trigger
     // Do something with response error
     const config = error.config;
-    if (error?.response?.status === 500 && !config.sent) {
+    if (error?.response?.data?.message === "jwt expired" && !config.sent) {
       config.sent = true;
       const response = await getNewAccessToken();
       const accessToken = response?.data?.accessToken as string;

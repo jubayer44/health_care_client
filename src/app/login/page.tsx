@@ -8,6 +8,7 @@ import { storeUserInfo } from "@/services/auth.services";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useGetSingleUserQuery } from '@/redux/api/userApi';
 import { FieldValues } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -28,6 +29,7 @@ const validationSchema = z.object({
 });
 
 const LoginPage = () => {
+  const {refetch} = useGetSingleUserQuery({});
   const [error, setError] = useState("");
   const router = useRouter();
 
@@ -35,6 +37,7 @@ const LoginPage = () => {
     try {
       const res = await loginUser(values);
       if (res.success === true) {
+        refetch()
         toast.success(res.message);
         storeUserInfo({ accessToken: res.data.accessToken });
         setError("");

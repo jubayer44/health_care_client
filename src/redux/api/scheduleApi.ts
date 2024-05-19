@@ -12,9 +12,10 @@ const scheduleApi = baseApi.injectEndpoints({
       invalidatesTags: [tagTypes.schedule]
     }),
     getAllSchedules: builder.query({
-      query: () => ({
+      query: (args: Record<string, any>) => ({
         url: "/schedule",
         method: "GET",
+        params: args
       }),
       providesTags: [tagTypes.schedule]
     }),

@@ -21,7 +21,7 @@ export default function DashboardDrawer({children}: {children: React.ReactNode})
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [isClosing, setIsClosing] = React.useState(false);
 
-  const {data, isLoading} = useGetSingleUserQuery({});
+  const {data, isLoading, refetch} = useGetSingleUserQuery({});
 
   const handleDrawerClose = () => {
     setIsClosing(true);
@@ -38,7 +38,6 @@ export default function DashboardDrawer({children}: {children: React.ReactNode})
     }
   };
 
- 
 
 
   return (

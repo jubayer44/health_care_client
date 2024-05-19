@@ -25,7 +25,6 @@ const ScheduleModal = ({open, setOpen}: TProps) => {
         values.startTime = timeFormatter(values.startTime);
         values.endTime = timeFormatter(values.endTime);
 
-        
         try{
         const res = await createSchedule(values).unwrap();
         if(res?.length){

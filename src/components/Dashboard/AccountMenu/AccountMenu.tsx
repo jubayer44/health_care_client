@@ -51,7 +51,7 @@ export default function AccountMenu() {
   };
   const handleLogout = () => {
     setAnchorEl(null);
-    localStorage.removeItem("accessToken");
+    localStorage.removeItem("accessToken")
     router.push("/login");
   };
 
