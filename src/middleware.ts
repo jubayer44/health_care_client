@@ -1,10 +1,7 @@
 import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { authKey } from "./constants/authKey";
 import { decodedToken } from "./utils/jwt";
-import { USER_ROLE } from "./constants/role";
-import { JwtPayload } from "jwt-decode";
 
 type Role = keyof typeof roleBasedPrivateRoutes;
 
